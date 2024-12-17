@@ -80,7 +80,7 @@ function Register() {
                 setError('Unexpected response from server.');
             }
         } catch (error) {
-            console.error('Registration error:', error.response?.data || error.message);
+            console.log('Registration error:', error.response?.data || error.message);
             setError(error.response?.data?.message || 'Failed to register. Please try again.');
         } finally {
             setLoading(false); // Reset loading state

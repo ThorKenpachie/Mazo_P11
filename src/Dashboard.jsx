@@ -86,45 +86,40 @@ function Dashboard() {
     };
 
     // Delete a user
-    const deleteUser = async (id) => {
-
-        const token = localStorage.getItem('token');
-    
-        const headers = {
-          accept: 'application/json',
-          Authorization: token
-        };
-    
+    const deleteUser = async (user_id) => {
         const isConfirm = await Swal.fire({
-          title: ' Are you sure?',
-          text: "You won't able to return this!",
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
           icon: 'warning',
           showCancelButton: true,
           confirmButtonColor: '#3085d6',
           cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes, I want to delete it!'    
-        }).then((result) => {
-          return result.isConfirmed
-        });
+          confirmButtonText: 'Yes, delete it!'
+        }).then((result) => result.isConfirmed);
     
-        if(!isConfirm){
-          return;
-        }
+        if (!isConfirm) return;
     
         try {
-          await axios.delete(`${API_ENDPOINT}/user/${id}`, { headers });
-      
+          const headers = getHeaders();
+          await axios.delete(`${API_ENDPOINT}/user/${user_id}`, { headers });
+    
           Swal.fire({
-              icon: "success",
-              text: "Successfully Deleted"
+            icon: "success",
+            text: "Successfully Deleted"
           });
-          fetchData();
-      } catch (error) {
-          if (error.response) {
-              console.log ("Delete Response:");
-          }      
-      }
-    }
+    
+          setUsers(user.filter(user => user.user_id !== user_id));
+        } catch (error) {
+          const errorMessage = error.response
+            ? error.response.data?.message || 'Failed to delete user. Please try again.'
+            : error.message || 'An unexpected error occurred.';
+    
+          Swal.fire({
+            text: errorMessage,
+            icon: "error"
+          });
+        }
+      };
 
     // Create a new user
     const createUser = async (e) => {
